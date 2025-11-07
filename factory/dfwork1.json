@@ -1,0 +1,9 @@
+{
+	"name": "dfwork1",
+	"location": "koreacentral",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "d1b56751-e943-4be7-a9a5-83f4f66b18c8",
+		"tenantId": "b6af79af-198c-4c58-9c92-2c291145c430"
+	}
+}
