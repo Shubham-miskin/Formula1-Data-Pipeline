@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Ingest_circuits_files",
-				"type": "DatabricksNotebook",
+				"name": "Get Folder Details",
+				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,248 +15,304 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/01.Ingest_circuits_files",
-					"baseParameters": {
-						"file_date": {
-							"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
-							"type": "Expression"
+					"dataset": {
+						"referenceName": "Dataset_f1_bronze",
+						"type": "DatasetReference",
+						"parameters": {
+							"End_file_date": {
+								"value": "@pipeline().parameters.FileDate",
+								"type": "Expression"
+							}
 						}
+					},
+					"fieldList": [
+						"exists"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "JsonReadSettings"
 					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricks189",
-					"type": "LinkedServiceReference"
 				}
 			},
 			{
-				"name": "Ingest_races_files",
-				"type": "DatabricksNotebook",
+				"name": "If Folder Exist",
+				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "Ingest_circuits_files",
+						"activity": "Get Folder Details",
 						"dependencyConditions": [
 							"Completed"
 						]
 					}
 				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/02.Ingest_races_files",
-					"baseParameters": {
-						"file_date": {
-							"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
-							"type": "Expression"
+					"expression": {
+						"value": "@activity('Get Folder Details').output.exists",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Ingest_circuits_files",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/01.Ingest_circuits_files",
+								"baseParameters": {
+									"file_date": {
+										"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricks189",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Ingest_races_files",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "Ingest_circuits_files",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/02.Ingest_races_files",
+								"baseParameters": {
+									"file_date": {
+										"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricks189",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Ingest_constructors_files",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "Ingest_races_files",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/03.Ingest_constructors_files",
+								"baseParameters": {
+									"file_date": {
+										"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricks189",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Ingest_Drivers_files",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "Ingest_constructors_files",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/04.Ingest_Drivers_files",
+								"baseParameters": {
+									"file_date": {
+										"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricks189",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Ingest_Result_files",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "Ingest_Drivers_files",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/05.Ingest_Result_files",
+								"baseParameters": {
+									"file_date": {
+										"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricks189",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Ingest_Pitstop_files",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "Ingest_Result_files",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/06.Ingest_Pitstop_files",
+								"baseParameters": {
+									"file_date": {
+										"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricks189",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Ingest_LapTime_file",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "Ingest_Pitstop_files",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/07.Ingest_LapTime_files",
+								"baseParameters": {
+									"file_date": {
+										"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricks189",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Ingest_Qualifying_file",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "Ingest_LapTime_file",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/08.Ingest_Qualifying_files",
+								"baseParameters": {
+									"file_date": {
+										"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricks189",
+								"type": "LinkedServiceReference"
+							}
 						}
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricks189",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Ingest_constructors_files",
-				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "Ingest_races_files",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/03.Ingest_constructors_files",
-					"baseParameters": {
-						"file_date": {
-							"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
-							"type": "Expression"
-						}
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricks189",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Ingest_Drivers_files",
-				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "Ingest_constructors_files",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/04.Ingest_Drivers_files",
-					"baseParameters": {
-						"file_date": {
-							"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
-							"type": "Expression"
-						}
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricks189",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Ingest_Result_files",
-				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "Ingest_Drivers_files",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/05.Ingest_Result_files",
-					"baseParameters": {
-						"file_date": {
-							"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
-							"type": "Expression"
-						}
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricks189",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Ingest_Pitstop_files",
-				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "Ingest_Result_files",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/06.Ingest_Pitstop_files",
-					"baseParameters": {
-						"file_date": {
-							"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
-							"type": "Expression"
-						}
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricks189",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Ingest_LapTime_file",
-				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "Ingest_Pitstop_files",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/07.Ingest_LapTime_files",
-					"baseParameters": {
-						"file_date": {
-							"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
-							"type": "Expression"
-						}
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricks189",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Ingest_Qualifying_file",
-				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "Ingest_LapTime_file",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": "/Users/vinayaksitapazure@gmail.com/F1/02.Ingestion/08.Ingest_Qualifying_files",
-					"baseParameters": {
-						"file_date": {
-							"value": "@formatDateTime(pipeline().parameters.FileDate,'yyyy-MM-dd')",
-							"type": "Expression"
-						}
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricks189",
-					"type": "LinkedServiceReference"
+					]
 				}
 			}
 		],
