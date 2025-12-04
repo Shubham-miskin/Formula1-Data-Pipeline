@@ -1,0 +1,48 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "dfwork1"
+		},
+		"AzureDataLakeStorage1_accountKey": {
+			"value": ""
+		},
+		"AzureDatabricks189_accessToken": {
+			"value": ""
+		},
+		"AzureSqlDatabase1_password": {
+			"value": ""
+		},
+		"datalakework1_accountKey": {
+			"value": ""
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"value": "https://datalakework1.dfs.core.windows.net/"
+		},
+		"AzureDatabricks189_properties_typeProperties_existingClusterId": {
+			"value": "1106-174450-ljipt0h1"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_server": {
+			"value": "work1server.database.windows.net"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_database": {
+			"value": "work1db"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_userName": {
+			"value": "vinayaksitap"
+		},
+		"datalakework1_properties_typeProperties_url": {
+			"value": "https://datalakework1.dfs.core.windows.net/"
+		},
+		"Trigger_Process_F1_Data_properties_pipeline_parameters_FileDate": {
+			"value": "@trigger().scheduledTime"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
